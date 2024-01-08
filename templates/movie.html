@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap">
+    <title>{{ movie.title }}</title>
+    
+    <!-- Add your CSS styles or link to an external stylesheet here -->
+    <style>
+        /* Add your styles here */
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            margin: 20px;
+            background-color: #EAEAEA;
+        }
+        .info-container{
+            width: 100%;
+           background-color: #e9e6e6;
+           border-radius: 5px; 
+        }
+        .movie-details {
+            display: flex;
+            margin-top: 50px;
+            margin-left: 30px;
+        }
+
+        .movie-poster {
+            width: 300px;
+            height: 450px;
+            border-radius: 5px;
+            transition: all .3s;
+            position: relative; 
+            overflow: hidden; 
+        }
+        .movie-poster img{
+            height: 450px;
+            width: 300px;
+        }
+        .movie-info {
+            flex: 1;
+            margin-top: 80px;
+            margin-left: 40px;
+        }
+        .title-year {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .release-info {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .rating-trailer {
+            margin-top: 20px;
+            display: inline-flex;
+        }
+        .rating {
+            margin-top: 12px; 
+            margin-right: 3px;
+        }
+        .vote_average{
+            margin-top: 12px;
+        }
+        .play{
+            margin-left: 20px;
+            margin-top: 12px;
+        }
+        .buttonT {
+            margin-left: 100px;
+            display: flex;
+            justify-content: center;
+            color:rgb(14, 14, 26);
+            width: 55px;
+            height: 49px;
+            border-radius: 100%;
+            background: linear-gradient(270deg, rgba(2, 29, 78, 0.681) 0%, rgba(31, 215, 232, 0.873) 60%);
+            transition: all 0.3s ease-in-out 0s;
+            box-shadow: rgba(193, 244, 246, 0.698) 0px 0px 0px 0px;
+            animation: 1.2s cubic-bezier(0.8, 0, 0, 1) 0s infinite normal none running pulse;
+            align-items: center;
+            border: 0;
+            cursor: pointer;
+        }
+
+        .buttonT:is(:hover, :focus) {
+            transform: scale(1.2);
+        }
+
+        @keyframes pulse {
+                100% {
+                box-shadow: 0 0 0 45px rgba(193,244,246,0);
+        }
+       }
+
+    .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+    .modal-content {
+        position: absolute;
+        color: transparent;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: transparent;
+        padding: 20px;
+        border-radius: 5px;
+    }
+
+       .close {
+        position: absolute;
+        color: #e8e8e8;
+        top: 0.25px;
+        right: 2.5px;
+        font-size: 50px;
+        cursor: pointer;
+        }
+        .vote_average.green {
+             color: green;
+            font-weight: 800;
+        }
+
+       .vote_average.orange {
+           color: orange;
+           font-weight: 800;
+        }
+
+       .vote_average.red {
+          color: red;
+          font-weight: 900;
+        }
+        .list-cast {
+          display: flex;
+          white-space: nowrap; 
+        }
+
+.list-cast {
+    display: flex;
+    flex-wrap: wrap;  
+    justify-content: center;  
+}
+
+.card {
+    width: 190px; 
+    margin: 0 12px 12px 0;  
+    height: 250px;
+    border: none;
+    border-radius: 7px;
+    box-shadow: 0px 0px 10px 1px #cecccc;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.card img {
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    width: 100%;
+    height: 190px;  
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="info-container">
+    <div class="movie-details">
+        <!-- Movie Poster -->
+        <div class="movie-poster">
+            <img src="{{ 'https://image.tmdb.org/t/p/w500/' + movie.poster_path }}" alt="Movie Poster">
+        </div>
+
+        <!-- Movie Information -->
+        <div class="movie-info">
+            <!-- Title and Year -->
+            <div class="title-year">
+                <span>{{ movie.title }}</span>
+                <span> ({{ movie.release_date[:4] }})</span>
+            </div>
+
+            <!-- Release Date, Genre, and Duration -->
+            <div class="release-info">
+                <span>Release Date: {{ movie.release_date }}</span>
+                <span> | Genre: {{ movie.genres[0].name }} | Duration: {{ movie.runtime }} minutes</span>
+            </div>
+
+            <!-- Rating and Watch Trailer Button -->
+            <div class="rating-trailer">
+                <span class="rating">Rating : </span>
+                <span class="vote_average {% if movie.vote_average >= 7 %}green{% elif movie.vote_average >= 5 %}orange{% else %}red{% endif %}" >{{ movie.vote_average }}/10</span>
+                <button class="buttonT" onclick="fetchAndOpenTrailer({{ movie.id }})">
+                    <svg viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="26px">
+                        <path d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z" fill="currentColor"></path>
+                    </svg>
+                </button>
+                <span class="play">Play trailer</span>
+            </div>
+
+          
+            <div>
+                <h2>Overview</h2>
+                <p>{{ movie.overview }}</p>
+            </div>
+
+            
+            <div>
+                <h2>Producer</h2>
+                <p>{{ movie.production_companies[0].name }}</p>
+            </div>
+        </div>
+    </div>
+    </div>
+    <h2 style="margin-left: 30px;">Top Movie Cast:</h2>
+    <div class="list-cast" id="moviecastlist"> 
+     
+        {% for cast_member in cast[:12] if cast_member.profile_path %}
+            <div class="card">
+                <img src="{{ 'https://image.tmdb.org/t/p/w185/' + cast_member.profile_path }}" alt="{{ cast_member.name }} Photo">
+                <h4>{{ cast_member.name }}</h4>      
+            </div>
+        {% endfor %}
+    </div>
+
+
+   <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <iframe id="videoFrame" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+
+    
+<script>
+           // Get the modal and video frame elements
+var modal = document.getElementById('myModal');
+var videoFrame = document.getElementById('videoFrame'); 
+    // Function to open the modal and set the video source
+function openModal(trailerLink) {
+      modal.style.display = 'block';
+      videoFrame.src = trailerLink;
+}
+// Function to close the modal and stop the video
+function closeModal() {
+    modal.style.display = 'none';
+    videoFrame.src = '';
+}
+function fetchAndOpenTrailer(movieId) {
+    fetch(`/get_trailer/${movieId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.trailer_link) {
+                openModal(data.trailer_link);
+            } else {
+                alert('Trailer not available.');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching trailer:', error);
+            alert('Error fetching trailer.');
+        });
+}
+
+    // Attach click event listeners to all trailer buttons
+    var trailerButtons = document.querySelectorAll('.rating-trailer .buttonT');
+    trailerButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+        var trailerLink = button.getAttribute('data-trailer');
+        openModal(trailerLink);
+      });
+     });
+    </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap">
+    <link rel="stylesheet" href="static\styles.css">
+    <title>IWannaWatch</title>
+</head>
+<body>
+    <header>   
+        <form id="form" method="post" action="/"> 
+         
+            <button class="logo-button">
+              <img src="static\loogoog.PNG" alt="Mylogo">
+          </button>
+        
+           <div>
+            <button  class="pop__movies" id="pop_button" name="pop_button" onclick="this.form.submit()"> Popular now</button>
+          </div>
+          <div class="genre_filter">
+          <select class="genre__select" name="genre" id="genre" onchange="this.form.submit()">
+            <option value="" selected disabled>Select Genre</option>
+            <option value="28">Action</option>
+            <option value="12">Adventure</option>
+            <option value="16">Animation</option>
+            <option value="35">Comedy</option>
+            <option value="80">Crime</option>
+            <option value="99">Documentary</option>
+            <option value="18">Drama</option>
+            <option value="10751">Family</option>
+            <option value="14">Fantasy</option>
+            <option value="36">History</option>
+            <option value="27">Horror</option>
+            <option value="10402">Music</option>
+            <option value="9648">Mystery</option>
+            <option value="10749">Romance</option>
+            <option value="878">Science Fiction</option>
+            <option value="10770">TV Movie</option>
+            <option value="53">Thriller</option>
+            <option value="10752">War</option>
+            <option value="37">Western</option>
+            <!-- Add more genre options as needed -->
+        </select>
+           </div>
+         <div class="year_filter">
+          <input id="release_year" type="number" class="year__input" placeholder="Release Year" name="release_year">
+         </div>
+         <div class="actor_search">
+          <input type="text" id="search_actor" class="search__actor" placeholder="Type Actor name" name="search_actor">
+          <button class="search__button">
+              <svg class="search__icon" aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+              </svg>
+          </button>
+         </div>
+            <div class="search">
+                <input type="text" id="search_term" class="search__input" placeholder="Type movie name" name="search_term">
+                <button class="search__button">
+                    <svg class="search__icon" aria-hidden="true" viewBox="0 0 24 24">
+                      <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+                    </svg>
+                </button>
+            </div>
+        </form>  
+    </header>
+    <div class="welcome-text"> 
+      <h1>Hello, movie lover!</h1>
+      <h2>Step into a realm of cinematic wonders. Unveil the stories that await your discovery</h2>
+    </div>
+    <div class="movie-list">
+      {% if movies %}
+          {% for movie in movies %}
+              <div class="movie-card">
+                  {% if movie.poster_path %}
+                      <img src="{{ 'https://image.tmdb.org/t/p/w500/' + movie.poster_path }}" alt="{{ movie.title }}">
+                  {% else %}
+                      <p>No poster available</p>
+                  {% endif %}
+                  <div class="movie-info">
+                      <h4>{{ movie.title }}</h4>
+                      <span class="vote_average {% if movie.vote_average >= 7 %}green{% elif movie.vote_average >= 5 %}orange{% else %}red{% endif %}" >{{ movie.vote_average }}</span>
+                  </div>
+                  <div class="moreinfo">
+                    <div tabindex="0" class="plusButton" onclick="openmovie({{ movie.id }})">
+                    <svg class="plusIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                      <g mask="url(#mask0_21_345)">
+                        <path d="M13.75 23.75V16.25H6.25V13.75H13.75V6.25H16.25V13.75H23.75V16.25H16.25V23.75H13.75Z"></path>
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+
+                  <div class="trailer">
+                    <button class="btn" onclick="fetchAndOpenTrailer({{ movie.id }})">Watch trailer</button>
+                  </div>
+                              
+              </div>
+          {% endfor %}
+      {% else %}
+          <p>No movies found.</p>
+      {% endif %}
+  </div>
+
+<div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <iframe id="videoFrame" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+
+<script src="static\scripts.js"></script>
+
+</body>
+</html>
